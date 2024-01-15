@@ -335,7 +335,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         } else {
             availableWidth = leftSided ? getX() : Minecraft.getInstance().getWindow().getGuiScaledWidth() - getX();
         }
-        return availableWidth - 5 - SCROLLBAR_MARGIN_WIDTH;  // leave at least 5 pixel margin from edge of screen
+        return Math.max(availableWidth - 5 - SCROLLBAR_MARGIN_WIDTH, 16);  // leave at least 5 pixel margin from edge of screen
     }
 
     private boolean needsDropShadow(FormattedCharSequence line) {
@@ -641,7 +641,10 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         if (isHovered()) {
             for (AbstractWidget widget : subWidgets) {
                 if (widget.mouseClicked(mouseX - this.getX(), mouseY - this.effectiveY, button)) {
-                    return true;
+                    gui.setFocused(widget);
+                    return false;
+                } else {
+                    widget.setFocused(false);
                 }
             }
             // no sub-widgets took the click; toggle this animated stat open/closed

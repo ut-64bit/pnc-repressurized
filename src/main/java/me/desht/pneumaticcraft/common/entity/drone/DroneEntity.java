@@ -223,7 +223,8 @@ public class DroneEntity extends AbstractDroneEntity implements
     private int suffocationCounter = 40; // Drones are immune to suffocation for this time.
     private boolean isSuffocating;
     private boolean disabledByHacking;
-    private boolean standby; // If true, the drone's propellors stop, the drone will fall down, and won't use pressure.
+    private boolean standby; // If true, the drone's propellers stop, the drone will fall down, and won't use pressure.
+    private boolean allowStandbyPickup;
     private Minigun minigun;
     private int attackCount; // tracks number of times drone has starting attacking something
     private BlockPos deployPos; // where the drone was deployed, accessible to programs as '$deploy_pos'
@@ -507,7 +508,9 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (isAccelerating()) {
             setDeltaMovement(getDeltaMovement().scale(0.3));
             propSpeed = Math.min(1, propSpeed + 0.04F);
-            getAirHandler().addAir(-1);
+            if (!level.isClientSide) {
+                getAirHandler().addAir(-1);
+            }
         } else {
             propSpeed = Math.max(0, propSpeed - 0.04F);
         }
@@ -959,7 +962,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public boolean startRiding(Entity entity, boolean force) {
-        return ConfigHelper.common().drones.dronesCanBePickedUp.get() && super.startRiding(entity, force);
+        return canDroneBePickedUp() && super.startRiding(entity, force);
     }
 
     protected BasicAirHandler getAirHandler() {
@@ -968,7 +971,14 @@ public class DroneEntity extends AbstractDroneEntity implements
             ItemStack stack = new ItemStack(getDroneItem());
             EnchantmentHelper.setEnchantments(stackEnchants, stack);
             vol = ItemRegistry.getInstance().getModifiedVolume(stack, vol);
-            airHandler = new BasicAirHandler(vol);
+            airHandler = new BasicAirHandler(vol) {
+                @Override
+                public void addAir(int amount) {
+                    if (amount > 0 || getUpgrades(ModUpgrades.CREATIVE.get()) == 0) {
+                        super.addAir(amount);
+                    }
+                }
+            };
         }
         return airHandler;
     }
@@ -994,6 +1004,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (disabledByHacking) tag.putBoolean("disabledByHacking", true);
         if (gotoOwnerAI != null) tag.putBoolean("hackedByOwner", true);
         if (standby) tag.putBoolean("standby", true);
+        if (allowStandbyPickup) tag.putBoolean("allowStandbyPickup", true);
         if (carriedEntityAIdisabled) tag.putBoolean("carriedEntityAIdisabled", true);
         tag.putInt("color", getDroneColor());
         tag.put("variables", aiManager.writeToNBT(new CompoundTag()));
@@ -1045,6 +1056,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         setDroneColor(tag.getInt("color"));
         aiManager.readFromNBT(tag.getCompound("variables"));
         standby = tag.getBoolean("standby");
+        allowStandbyPickup = tag.getBoolean("allowStandbyPickup");
         upgradeInventory.deserializeNBT(tag.getCompound(UpgradableItemUtils.NBT_UPGRADE_TAG));
         upgradeCache.invalidateCache();
         getAirHandler().deserializeNBT(tag.getCompound("airHandler"));
@@ -1121,7 +1133,8 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (minigun == null) {
             minigun = new MinigunDrone(level().isClientSide ? null : getFakePlayer())
                     .setWorld(level())
-                    .setAirHandler(this.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY), PneumaticValues.DRONE_USAGE_ATTACK);
+                    .setAirHandler(this.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY), PneumaticValues.DRONE_USAGE_ATTACK)
+                    .setInfiniteAmmo(getUpgrades(ModUpgrades.CREATIVE.get()) > 0);
         }
         return minigun;
     }
@@ -1326,8 +1339,9 @@ public class DroneEntity extends AbstractDroneEntity implements
         return server != null ? server.getPlayerList().getPlayer(ownerUUID) : null;
     }
 
-    public void setStandby(boolean standby) {
+    public void setStandby(boolean standby, boolean allowPickup) {
         this.standby = standby;
+        this.allowStandbyPickup = allowPickup;
     }
 
     @Override
@@ -1384,9 +1398,14 @@ public class DroneEntity extends AbstractDroneEntity implements
         }
     }
 
+    private boolean canDroneBePickedUp() {
+        return ConfigHelper.common().drones.dronesCanBePickedUp.get()
+                || standby && allowStandbyPickup;
+    }
+
     private void checkForMinecartKludge(Entity e) {
         double y = e.getY();
-        if (ConfigHelper.common().drones.dronesCanBePickedUp.get() && (e instanceof AbstractMinecart || e instanceof Boat)) {
+        if (canDroneBePickedUp() && (e instanceof AbstractMinecart || e instanceof Boat)) {
             // little kludge to prevent the dropped minecart/boat immediately picking up the drone
             y -= 2;
             BlockPos pos = e.blockPosition();

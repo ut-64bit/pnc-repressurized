@@ -110,4 +110,33 @@ public interface ICommonArmorHandler {
      * @return the extension, or null if there is none for this type of upgrade
      */
     <T extends IArmorExtensionData> T getExtensionData(IArmorUpgradeHandler<T> handler);
+
+    /**
+     * Check if the given upgrade is currently enabled, i.e. has been switched on by the player.
+     *
+     * @param upgrade the upgrade to check
+     * @return true if the upgrade is currently enabled, false otherwise
+     */
+    boolean isUpgradeEnabled(IArmorUpgradeHandler<?> upgrade);
+
+    /**
+     * Set the given upgrade enablement status. This can be called on either client or server, and will handle
+     * sync'ing the enablement appropriately. This is a no-op if the status is already the same as the requested
+     * new status, or if the upgrade isn't usable (i.e. not installed, armor disabled, out of air...)
+     *
+     * @param upgrade the upgrade to enable/disable
+     * @param enabled the new enablement status
+     */
+    void setUpgradeEnabled(IArmorUpgradeHandler<?> upgrade, boolean enabled);
+
+    /**
+     * Convenience method to check if the armor item in the given slot is on (vanilla) cooldown. Note that the
+     * method does not check if the item is actually a Pneumatic Armor piece; this method is typically called
+     * from {@link IArmorUpgradeHandler#tick(ICommonArmorHandler, boolean)} where the armor is already known to
+     * be Pneumatic Armor.
+     *
+     * @param slot the slot to check
+     * @return true if the equipped item is on cooldown, false otherwise
+     */
+    boolean isOnCooldown(EquipmentSlot slot);
 }

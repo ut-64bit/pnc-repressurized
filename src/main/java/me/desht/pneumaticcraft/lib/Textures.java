@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 public class Textures {
     static final String ICON_LOCATION = Names.MOD_ID + ":";
 
-    private static final String MODEL_LOCATION = ICON_LOCATION + "textures/model/";
+    private static final String MODEL_LOCATION = ICON_LOCATION + "textures/pnc_model/";
     private static final String TUBE_MODULE_MODEL_LOCATION = MODEL_LOCATION + "modules/";
     private static final String GUI_LOCATION = ICON_LOCATION + "textures/gui/";
     private static final String ENTITY_LOCATION = ICON_LOCATION + "textures/entity/";
@@ -62,6 +62,8 @@ public class Textures {
     public static final ResourceLocation MODEL_REDSTONE_MODULE_UPGRADED = tubeModuleTexture("redstone_upgraded.png");
     public static final ResourceLocation MODEL_VACUUM_MODULE = tubeModuleTexture("vacuum.png");
     public static final ResourceLocation MODEL_VACUUM_MODULE_UPGRADED = tubeModuleTexture("vacuum_upgraded.png");
+    public static final ResourceLocation MODEL_THERMOSTAT_MODULE = tubeModuleTexture("thermostat_module.png");
+    public static final ResourceLocation MODEL_THERMOSTAT_MODULE_UPGRADED = tubeModuleTexture("thermostat_module_upgraded.png");
 
     // Progwidget textures
     public static final ResourceLocation PROG_WIDGET_COMMENT = progWidgetTexture("comment_piece.png");

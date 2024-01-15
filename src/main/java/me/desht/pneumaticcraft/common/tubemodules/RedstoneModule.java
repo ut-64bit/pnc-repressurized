@@ -108,6 +108,10 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
                     if (mr.getRedstoneDirection() == EnumRedstoneDirection.INPUT && mr.getInputLevel() > levels[mr.getColorChannel()])
                         levels[mr.getColorChannel()] = (byte) mr.inputLevel;
                 }
+                if (module instanceof ThermostatModule mr) {
+                    if (mr.getLevel() > levels[mr.getColorChannel()])
+                        levels[mr.getColorChannel()] = (byte) mr.getLevel();
+                }
             }
 
             int out = computeOutputSignal(outputLevel, levels);

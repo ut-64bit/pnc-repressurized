@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
@@ -30,14 +31,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
 public class ChargingHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
-    private static final ResourceLocation ID = RL("charging");
 
     @Override
     public ResourceLocation getID() {
-        return ID;
+        return BuiltinArmorUpgrades.CHARGING;
     }
 
     @Override
@@ -83,16 +81,17 @@ public class ChargingHandler extends BaseArmorUpgradeHandler<IArmorExtensionData
     }
 
     private void tryPressurize(ICommonArmorHandler commonArmorHandler, int airAmount, ItemStack destStack) {
-        if (destStack.isEmpty()) return;
-        destStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(destHandler -> {
-            float pressure = destHandler.getPressure();
-            if (pressure < destHandler.maxPressure() && pressure < commonArmorHandler.getArmorPressure(EquipmentSlot.CHEST)) {
-                int currentAir = destHandler.getAir();// pressure * destHandler.getVolume();
-                int targetAir = (int) (commonArmorHandler.getArmorPressure(EquipmentSlot.CHEST) * destHandler.getVolume());
-                int amountToMove = Mth.clamp(targetAir - currentAir, -airAmount, airAmount);
-                destHandler.addAir(amountToMove);
-                commonArmorHandler.addAir(EquipmentSlot.CHEST, -amountToMove);
-            }
-        });
+        if (destStack.getCount() == 1) {
+            destStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(destHandler -> {
+                float pressure = destHandler.getPressure();
+                if (pressure < destHandler.maxPressure() && pressure < commonArmorHandler.getArmorPressure(EquipmentSlot.CHEST)) {
+                    int currentAir = destHandler.getAir();// pressure * destHandler.getVolume();
+                    int targetAir = (int) (commonArmorHandler.getArmorPressure(EquipmentSlot.CHEST) * destHandler.getVolume());
+                    int amountToMove = Mth.clamp(targetAir - currentAir, -airAmount, airAmount);
+                    destHandler.addAir(amountToMove);
+                    commonArmorHandler.addAir(EquipmentSlot.CHEST, -amountToMove);
+                }
+            });
+        }
     }
 }

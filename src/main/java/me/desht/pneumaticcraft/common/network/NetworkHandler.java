@@ -143,6 +143,10 @@ public class NetworkHandler {
 				PacketSyncRedstoneModuleToClient::toBytes, PacketSyncRedstoneModuleToClient::new, PacketSyncRedstoneModuleToClient::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketSyncRedstoneModuleToServer.class,
 				PacketSyncRedstoneModuleToServer::toBytes, PacketSyncRedstoneModuleToServer::new, PacketSyncRedstoneModuleToServer::handle, PLAY_TO_SERVER);
+		registerMessage(PacketSyncThermostatModuleToClient.class,
+				PacketSyncThermostatModuleToClient::toBytes, PacketSyncThermostatModuleToClient::new, PacketSyncThermostatModuleToClient::handle, PLAY_TO_CLIENT);
+		registerMessage(PacketSyncThermostatModuleToServer.class,
+				PacketSyncThermostatModuleToServer::toBytes, PacketSyncThermostatModuleToServer::new, PacketSyncThermostatModuleToServer::handle, PLAY_TO_SERVER);
 		registerMessage(PacketHackingBlockStart.class,
 				PacketHackingBlockStart::toBytes, PacketHackingBlockStart::new, PacketHackingBlockStart::handle);
 		registerMessage(PacketHackingBlockFinish.class,
@@ -152,7 +156,7 @@ public class NetworkHandler {
 		registerMessage(PacketHackingEntityFinish.class,
 				PacketHackingEntityFinish::toBytes, PacketHackingEntityFinish::new, PacketHackingEntityFinish::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketToggleArmorFeature.class,
-				PacketToggleArmorFeature::toBytes, PacketToggleArmorFeature::new, PacketToggleArmorFeature::handle, PLAY_TO_SERVER);
+				PacketToggleArmorFeature::toBytes, PacketToggleArmorFeature::new, PacketToggleArmorFeature::handle);
 		registerMessage(PacketToggleArmorFeatureBulk.class,
 				PacketToggleArmorFeatureBulk::toBytes, PacketToggleArmorFeatureBulk::new, PacketToggleArmorFeatureBulk::handle, PLAY_TO_SERVER);
 		registerMessage(PacketUpdateDebuggingDrone.class,

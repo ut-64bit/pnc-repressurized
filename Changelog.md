@@ -6,6 +6,108 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.13]
+
+### Added
+* Added a new tube module: the Thermostat Module - thanks @johalun (coding) and @Ridanisaurus (texturing)
+  * Measures the temperature of the block it's facing and converts to a redstone signal
+  * Use a Redstone Module on the same colour channel to output the signal
+
+### Fixed
+
+* Fixed Liquid Hopper not immediately updating comparator output level when fluid level changed
+* Fixed Pneumatic Armor HUD stat panel forever-expanding if moved off the screen to the right
+  * Also added a "Reset" button to the stat-moving GUI; retrieve stat panels which you've moved off-screen this way
+* Some memory leak fixes and general improvements around handling and caching of air handlers capabilities - thanks @BlueAgent
+
+## [6.0.12]
+
+### Added
+* Added client config setting `jackhammer_hud` (default: true) to control the display of the Jackhammer mode overlay
+
+### Fixed
+* Fixed crash in Assembly system caused by missing machine
+* Fixed Thermopneumatic Processing Plant comparator "has work" output
+  * It wasn't taking fullness of the output into account - it does now
+* Fixed the Patchouli manual not working with latest Patchouli release (1.20.1-83)
+
+## [6.0.11]
+
+### Added
+* Sentry Turrets, Drones and Miniguns can now take a Creative Supply Upgrade
+  * When installed, those things have infinite ammunition and air (where applicable)
+
+### Fixed
+* Fixed Omnidirectional & Liquid Hoppers having their input blocked by partial blocks
+  * Now behaves more like vanilla Hoppers, so e.g. a carpet on the hopper doesn't prevent item absorption
+* Fixed Crop Supports not actually doing any growth tick acceleration!
+* Fixed crash on init caused by other mods failing to set a fluid type for their modded fluids
+  * Now logs an error instead and shows which fluid was at fault; this fluid will not be usable as temperature-based fuel in compressors
+* Fixed textfield focus problems for Minimum Order Size GUI side tab for logistics frames
+
+## [6.0.10]
+
+### Added
+* Added "Allow Drone Pickup" option to the Standby programming widget
+  * When checked, drones in standby mode can be picked up by other entities (boats, minecarts...) regardless of the global `drones_can_be_picked_up` setting
+
+### Fixed
+* Fixed case where equipping a piece of Pneumatic Armor over another piece of Pneumatic Armor didn't trigger a re-init of the armor
+* Fixed missing info for Item Life Pneumatic Armor upgrade in the charging station GUI
+* Fixed keypresses being picked up twice in the Entity Tracker GUI textfield
+* Fixed Pneumatic Armor chestplate charging module wasting air trying and failing to charge stacked Air Canisters 
+* Fixed PNC fluids not being replaceable (was impossible to place blocks to fill in an oil lake, for example)
+* Fixed server startup failing when in dev environment (launched via 'runServer')
+
+## [6.0.9]
+
+### Added
+* Added new area type for the Area progwidget (and Area GPS Tool): Torus
+  * Thanks @johalun
+  * P1 is assumed to be in the center of the torus
+  * When radially symmetric about the Y-axis, the distance between P1 and P2 in the X/Z plane makes the radius of the torus to the center of the tube and the distance in the Y plane makes the radius of the tube
+* Added new API methods to check and set the enablement of Pneumatic Armor upgrades
+* If Pneumatic Boots are on (vanilla) cooldown, flight effects are suppressed
+  * When suppressed, the Jet Boots display panel switches stats from green to red, and blinks them
+  * This will also happen if you try to fly more than 64 blocks above max build height (so Y > 384 for the overworld)
+  * PNC doesn't do this itself, but it adds a hook for other mods to use...
+* Added new "team" modifier for entity filters: checks if the entity is on the given scoreboard team
+  * E.g. `@player(team=team1)` matches players on team "team1"
+
+### Fixed
+* When adding custom Heat Properties recipes, no longer require a mod matching the block's namespace to be loaded
+  * This allows blocks with custom namespaces to be registered, e.g. via KubeJS
+  * Existence of the block in the block registry is still checked for, of course
+
+## [6.0.8]
+
+### Fixed
+* Added missing manual page for the Reinforced Air Canister
+* Fixed a client disconnect/crash when right-clicking certain Logistics frames with the Logistics Configurator
+* Logistics Requester frames now round-robin requests more intelligently when multiple frames are requesting the same resource into their inventories
+  * Thanks @johalun
+* Fixed Jackhammer not breaking blocks when Shift was held
+  * Correct behaviour is to break only the focused block (assuming the Jackhammer is in multiblock mode)
+* Fixed Harvesting drone widget not recognising Bamboo as harvestable
+  * This 1.19.2 feature got missed in the port to 1.20
+* Fixed Minigun basic ammo wrongly using the armor-piercing damage source
+* Fixed Minigun damage sources have a null direct source entity (meaning the shooter couldn't be reliably identified for aggro or protection purposes)
+
+## [6.0.7]
+
+### Fixed
+* Fixed problem with Pneumatic Armor and various keypresses (media volume controls in particular) causing spurious sounds to be played
+
+## [6.0.6]
+
+### Fixed
+* Fixed key modifiers for Pneumatic Armor hotkeys not working as intended (problem introduced in 6.0.5)
+* Creative Compressor GUI can now do fast-adjust of block's pressure level by holding Shift while clicking (x5 adjust)
+* A bit more block atlas cleanup; PNC block model texture now in the `pnc_model` directory instead of just `model` (no player-noticeable difference)
+* Fixed Omnidirectional & Liquid Hoppers not correctly processing installed upgrades when placed back down after breaking
+  * Upgrades were still present but having no effect until manually removed and replaced
+* Stop server warnings about not finding trades when setting up random Amadron villager trades
+
 ## [6.0.5]
 
 ### Changed
